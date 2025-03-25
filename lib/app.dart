@@ -29,6 +29,7 @@ class IndustrialMonitorApp extends StatelessWidget {
   }
 
   String _initialRoute(AuthService authService) {
+    print("pinverived:--------${authService.isPinVerified}");
     if (!authService.isLoggedIn) {
       return LoginScreen.routeName;
     } else if (!authService.isPinVerified) {

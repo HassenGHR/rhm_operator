@@ -1,4 +1,11 @@
 class Validators {
+  static String? validateName(String? value) {
+    if (value == null || value.isEmpty) {
+      return 'Name is required';
+    }
+    return null;
+  }
+
   static String? validateEmail(String? value) {
     if (value == null || value.isEmpty) {
       return 'Email is required';

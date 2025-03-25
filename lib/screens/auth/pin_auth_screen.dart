@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:industrial_monitor/screens/auth/login_screen.dart';
+import 'package:industrial_monitor/screens/home/home_screen.dart';
 import 'package:industrial_monitor/services/auth_service.dart';
 import 'package:industrial_monitor/widgets/custom_button.dart';
 import 'package:provider/provider.dart';
 
 class PinAuthScreen extends StatefulWidget {
-  static var routeName;
+  static const String routeName = '/pin-auth';
 
   const PinAuthScreen({Key? key}) : super(key: key);
 
@@ -24,164 +26,137 @@ class _PinAuthScreenState extends State<PinAuthScreen> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final mediaQuery = MediaQuery.of(context);
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('PIN Authentication'),
-        elevation: 0,
-      ),
+      backgroundColor: theme.colorScheme.background,
       body: SafeArea(
-        child: Column(
-          children: [
-            // Title and Instructions
-            Expanded(
-              flex: 3,
-              child: Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Icon(
-                      Icons.lock_rounded,
-                      size: 56,
-                      color: theme.colorScheme.primary,
-                    ),
-                    const SizedBox(height: 24),
-                    Text(
-                      'Enter Your PIN',
-                      style: theme.textTheme.headlineSmall?.copyWith(
-                        fontWeight: FontWeight.bold,
+        child: SingleChildScrollView(
+          child: ConstrainedBox(
+            constraints: BoxConstraints(
+              minHeight: mediaQuery.size.height -
+                  mediaQuery.padding.top -
+                  mediaQuery.padding.bottom,
+            ),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                // Header
+                Padding(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 16, vertical: 24),
+                  child: Row(
+                    children: [
+                      IconButton(
+                        icon: const Icon(Icons.arrow_back),
+                        onPressed: () => Navigator.of(context).pop(),
                       ),
-                    ),
-                    const SizedBox(height: 8),
-                    Text(
-                      'Enter your 4-digit PIN to continue',
-                      style: theme.textTheme.bodyLarge,
-                    ),
-
-                    // PIN Display
-                    const SizedBox(height: 32),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: List.generate(
-                        4,
-                        (index) => Container(
-                          margin: const EdgeInsets.symmetric(horizontal: 12),
-                          width: 20,
-                          height: 20,
-                          decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            color: _pin[index].isNotEmpty
-                                ? theme.colorScheme.primary
-                                : theme.disabledColor.withOpacity(0.3),
-                          ),
-                        ),
-                      ),
-                    ),
-
-                    // Error Message
-                    if (_isError) ...[
-                      const SizedBox(height: 16),
+                      const SizedBox(width: 16),
                       Text(
-                        _errorMessage,
-                        style: TextStyle(
-                          color: theme.colorScheme.error,
+                        'PIN Authentication',
+                        style: theme.textTheme.headlineSmall?.copyWith(
                           fontWeight: FontWeight.bold,
                         ),
                       ),
-                      const SizedBox(height: 8),
+                    ],
+                  ),
+                ),
+
+                // Content
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 24),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      // Lock Icon and Title
+                      Icon(
+                        Icons.lock_rounded,
+                        size: 80,
+                        color: theme.colorScheme.primary,
+                      ),
+                      const SizedBox(height: 24),
                       Text(
-                        'Attempts: $_attempts/$_maxAttempts',
-                        style: TextStyle(
-                          color: theme.colorScheme.error,
+                        'Enter Your PIN',
+                        style: theme.textTheme.headlineMedium?.copyWith(
+                          fontWeight: FontWeight.bold,
                         ),
                       ),
-                    ],
-                  ],
-                ),
-              ),
-            ),
-
-            // PIN Keypad
-            Expanded(
-              flex: 7,
-              child: Container(
-                color: theme.colorScheme.surface,
-                child: Column(
-                  children: [
-                    Expanded(
-                      child: GridView.count(
-                        crossAxisCount: 3,
-                        childAspectRatio: 1.5,
-                        padding: const EdgeInsets.all(16),
-                        children: [
-                          // Digits 1-9
-                          for (int i = 1; i <= 9; i++)
-                            _buildKeypadButton(i.toString()),
-
-                          // Forgot PIN Button
-                          _buildActionButton(
-                            icon: Icons.help_outline,
-                            onTap: _showForgotPinDialog,
-                            color: theme.colorScheme.secondary,
-                          ),
-
-                          // Digit 0
-                          _buildKeypadButton('0'),
-
-                          // Backspace Button
-                          _buildActionButton(
-                            icon: Icons.backspace_outlined,
-                            onTap: _handleBackspace,
-                            color: theme.colorScheme.primary,
-                          ),
-                        ],
+                      const SizedBox(height: 12),
+                      Text(
+                        'Please enter your 4-digit PIN to access the app',
+                        textAlign: TextAlign.center,
+                        style: theme.textTheme.bodyLarge?.copyWith(
+                          color:
+                              theme.colorScheme.onBackground.withOpacity(0.7),
+                        ),
                       ),
-                    ),
 
-                    // Alternative Login
-                    Padding(
-                      padding: const EdgeInsets.all(16.0),
-                      child: CustomButton(
+                      // PIN Indicator
+                      const SizedBox(height: 36),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: List.generate(
+                          4,
+                          (index) => AnimatedContainer(
+                            duration: const Duration(milliseconds: 200),
+                            margin: const EdgeInsets.symmetric(horizontal: 10),
+                            width: 24,
+                            height: 24,
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              color: _pin[index].isNotEmpty
+                                  ? theme.colorScheme.primary
+                                  : theme.colorScheme.surface,
+                              border: Border.all(
+                                color: _pin[index].isNotEmpty
+                                    ? theme.colorScheme.primary
+                                    : theme.colorScheme.onSurface
+                                        .withOpacity(0.3),
+                                width: 2,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+
+                      // Error Message
+                      if (_isError) ...[
+                        const SizedBox(height: 16),
+                        Text(
+                          _errorMessage,
+                          style: TextStyle(
+                            color: theme.colorScheme.error,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        const SizedBox(height: 8),
+                        Text(
+                          'Attempts: $_attempts/$_maxAttempts',
+                          style: TextStyle(
+                            color: theme.colorScheme.error,
+                          ),
+                        ),
+                      ],
+
+                      // Keypad
+                      const SizedBox(height: 36),
+                      _buildNumericKeypad(context),
+
+                      // Alternative Login
+                      const SizedBox(height: 24),
+                      CustomButton(
                         onPressed: () {
-                          Navigator.of(context).pushReplacementNamed('/login');
+                          Navigator.of(context)
+                              .pushReplacementNamed(LoginScreen.routeName);
                         },
-                        text: 'Use Email Login Instead',
-                        // isOutlined: true,
+                        text: 'Use Email Login',
+                        // variant: ButtonVariant.secondary,
                       ),
-                    ),
-                  ],
+                      const SizedBox(height: 16), // Added bottom padding
+                    ],
+                  ),
                 ),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildKeypadButton(String digit) {
-    return InkWell(
-      onTap: _isAuthenticating ? null : () => _handleDigitInput(digit),
-      child: Container(
-        margin: const EdgeInsets.all(8),
-        decoration: BoxDecoration(
-          color: Theme.of(context).cardColor,
-          borderRadius: BorderRadius.circular(12),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.05),
-              spreadRadius: 1,
-              blurRadius: 3,
-              offset: const Offset(0, 1),
-            ),
-          ],
-        ),
-        child: Center(
-          child: Text(
-            digit,
-            style: const TextStyle(
-              fontSize: 24,
-              fontWeight: FontWeight.bold,
+              ],
             ),
           ),
         ),
@@ -189,31 +164,107 @@ class _PinAuthScreenState extends State<PinAuthScreen> {
     );
   }
 
-  Widget _buildActionButton({
-    required IconData icon,
-    required VoidCallback onTap,
-    required Color color,
-  }) {
+  Widget _buildNumericKeypad(BuildContext context) {
+    final theme = Theme.of(context);
+    return GridView.count(
+      crossAxisCount: 3,
+      shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
+      childAspectRatio: 1.2,
+      children: [
+        ...List.generate(9, (index) => _buildKeypadButton('${index + 1}')),
+        _buildForgotPinButton(context),
+        _buildKeypadButton('0'),
+        _buildBackspaceButton(),
+      ],
+    );
+  }
+
+  Widget _buildKeypadButton(String digit) {
+    final theme = Theme.of(context);
     return InkWell(
-      onTap: _isAuthenticating ? null : onTap,
+      borderRadius: BorderRadius.circular(16),
+      onTap: _isAuthenticating ? null : () => _handleDigitInput(digit),
       child: Container(
         margin: const EdgeInsets.all(8),
         decoration: BoxDecoration(
-          color: Theme.of(context).cardColor,
-          borderRadius: BorderRadius.circular(12),
+          color: theme.cardColor,
+          borderRadius: BorderRadius.circular(16),
           boxShadow: [
             BoxShadow(
               color: Colors.black.withOpacity(0.05),
               spreadRadius: 1,
               blurRadius: 3,
-              offset: const Offset(0, 1),
+              offset: const Offset(0, 2),
+            ),
+          ],
+        ),
+        child: Center(
+          child: Text(
+            digit,
+            style: theme.textTheme.headlineSmall?.copyWith(
+              fontWeight: FontWeight.w600,
+              color: theme.colorScheme.onSurface,
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildForgotPinButton(BuildContext context) {
+    final theme = Theme.of(context);
+    return InkWell(
+      borderRadius: BorderRadius.circular(16),
+      onTap: _isAuthenticating ? null : _showForgotPinDialog,
+      child: Container(
+        margin: const EdgeInsets.all(8),
+        decoration: BoxDecoration(
+          color: theme.cardColor,
+          borderRadius: BorderRadius.circular(16),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.05),
+              spreadRadius: 1,
+              blurRadius: 3,
+              offset: const Offset(0, 2),
             ),
           ],
         ),
         child: Center(
           child: Icon(
-            icon,
-            color: color,
+            Icons.help_outline,
+            color: theme.colorScheme.secondary,
+            size: 28,
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildBackspaceButton() {
+    final theme = Theme.of(context);
+    return InkWell(
+      borderRadius: BorderRadius.circular(16),
+      onTap: _isAuthenticating ? null : _handleBackspace,
+      child: Container(
+        margin: const EdgeInsets.all(8),
+        decoration: BoxDecoration(
+          color: theme.cardColor,
+          borderRadius: BorderRadius.circular(16),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.05),
+              spreadRadius: 1,
+              blurRadius: 3,
+              offset: const Offset(0, 2),
+            ),
+          ],
+        ),
+        child: Center(
+          child: Icon(
+            Icons.backspace_outlined,
+            color: theme.colorScheme.primary,
             size: 28,
           ),
         ),
@@ -258,7 +309,7 @@ class _PinAuthScreenState extends State<PinAuthScreen> {
       final success = await authService.verifyPin(enteredPin);
 
       if (success) {
-        Navigator.of(context).pushReplacementNamed('/home');
+        Navigator.of(context).pushReplacementNamed(HomeScreen.routeName);
       } else {
         _attempts++;
         setState(() {

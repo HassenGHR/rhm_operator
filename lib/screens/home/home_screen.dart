@@ -8,9 +8,9 @@ import 'charts_tab.dart';
 import '../settings/settings_screen.dart';
 
 class HomeScreen extends StatefulWidget {
-  static var routeName;
+  static const String routeName = '/home';
 
-  const HomeScreen({Key? key}) : super(key: key);
+  const HomeScreen({super.key});
 
   @override
   _HomeScreenState createState() => _HomeScreenState();
@@ -71,7 +71,10 @@ class _HomeScreenState extends State<HomeScreen> {
                             child: const Text('Cancel'),
                           ),
                           TextButton(
-                            onPressed: () => Navigator.of(context).pop(true),
+                            onPressed: () {
+                              authService.signOut();
+                              // Navigator.of(context).pushNamed(HomeScreen.routeName);
+                            },
                             child: const Text('Logout'),
                           ),
                         ],

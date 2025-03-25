@@ -7,7 +7,7 @@ import 'package:industrial_monitor/widgets/custom_button.dart';
 import 'package:provider/provider.dart';
 
 class SettingsScreen extends StatefulWidget {
-  static var routeName;
+  static const String routeName = '/settings';
 
   const SettingsScreen({Key? key}) : super(key: key);
 

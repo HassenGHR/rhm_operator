@@ -42,7 +42,7 @@ class AuthService extends ChangeNotifier {
 
     // Auto-verify PIN if it's not set (first-time users)
     if (_pin == null || _pin!.isEmpty) {
-      _isPinVerified = true;
+      _isPinVerified = false;
     }
 
     notifyListeners();
@@ -72,17 +72,17 @@ class AuthService extends ChangeNotifier {
     }
   }
 
-  Future<bool> signUp(String email, String password) async {
+  Future<bool> signUp(String name, String email, String password) async {
     try {
       // Store credentials locally
       await _secureStorage.write(key: 'user_email', value: email);
       await _secureStorage.write(key: 'user_password', value: password);
-      await _secureStorage.write(key: 'user_name', value: 'User');
+      await _secureStorage.write(key: 'user_name', value: name);
 
       _currentUser = User(
         id: email,
         email: email,
-        displayName: 'User',
+        displayName: name,
       );
       notifyListeners();
       return true;
@@ -128,11 +128,17 @@ class AuthService extends ChangeNotifier {
 
   Future<bool> resetPin(String newPin) async {
     try {
-      await _secureStorage.write(key: 'pin', value: newPin);
-      _pin = newPin;
-      _isPinVerified = true;
-      notifyListeners();
-      return true;
+      final _email = await _secureStorage.read(key: 'user_email');
+      if (_email != null && _email.isNotEmpty) {
+        await _secureStorage.write(key: 'pin', value: newPin);
+        _pin = newPin;
+        _isPinVerified = true;
+        notifyListeners();
+        return true;
+      }
+      debugPrint('User does not exist');
+
+      return false;
     } catch (e) {
       debugPrint('Reset PIN error: $e');
       return false;
@@ -144,9 +150,9 @@ class AuthService extends ChangeNotifier {
     try {
       // Instead of sending an email, just reset the PIN to a default value
       // In a real app, you might want to implement a different recovery method
-      await _secureStorage.write(key: 'pin', value: '0000');
-      _pin = '0000';
-      debugPrint('PIN has been reset to default: 0000');
+      // await _secureStorage.write(key: 'pin', value: '0000');
+      // _pin = '0000';
+      // debugPrint('PIN has been reset to default: 0000');
       return true;
     } catch (e) {
       debugPrint('Reset PIN error: $e');

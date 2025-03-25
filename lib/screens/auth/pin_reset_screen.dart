@@ -5,7 +5,7 @@ import '../../widgets/custom_input.dart';
 import '../../utils/validators.dart';
 
 class PinResetScreen extends StatefulWidget {
-  static var routeName;
+  static const String routeName = '/pin-reset';
 
   const PinResetScreen({Key? key}) : super(key: key);
 
