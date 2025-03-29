@@ -17,6 +17,8 @@ dependencies:
   syncfusion_flutter_charts: 21.2.4
   flutter_svg: ^2.0.7
   intl: 0.17.0
+  flutter_animate:
+  lucide_icons:
 
   # State Management
   provider: ^6.0.5
