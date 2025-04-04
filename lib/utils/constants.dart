@@ -1,5 +1,13 @@
 enum UnitStatus { normal, warning, critical }
 
+// Activity types
+enum ActivityType {
+  info,
+  warning,
+  error,
+  success,
+}
+
 class AppConstants {
   // Hive Box Names
   static const String userBox = 'userBox';

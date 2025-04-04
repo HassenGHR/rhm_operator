@@ -19,6 +19,8 @@ dependencies:
   intl: 0.17.0
   flutter_animate:
   lucide_icons:
+  weather_icons:
+  carousel_slider:
 
   # State Management
   provider: ^6.0.5

@@ -5,7 +5,7 @@ import 'package:google_fonts/google_fonts.dart';
 class AppTheme {
   // Light theme
   static final ThemeData lightTheme = FlexThemeData.light(
-    scheme: FlexScheme.blue,
+    scheme: FlexScheme.amber,
     surfaceMode: FlexSurfaceMode.levelSurfacesLowScaffold,
     blendLevel: 9,
     subThemesData: const FlexSubThemesData(
